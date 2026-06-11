@@ -1,0 +1,17 @@
+{
+  "name": "jkk-vacancy-checker",
+  "version": "1.0.0",
+  "description": "JKK東京 コーシャタワー佃 空室自動チェッカー",
+  "type": "module",
+  "scripts": {
+    "start": "node checker.js",
+    "check-once": "node checker.js --once",
+    "test-line": "node test-line.js",
+    "debug": "node checker.js --once --debug"
+  },
+  "dependencies": {
+    "playwright": "^1.52.0",
+    "node-notifier": "^10.0.1",
+    "dotenv": "^16.4.7"
+  }
+}
