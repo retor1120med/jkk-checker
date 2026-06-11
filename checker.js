@@ -157,10 +157,10 @@ async function checkVacancy() {
       else break;
     }
 
-    const found =
-      fullText.includes(TARGET) ||
-      fullText.includes(TARGET.replace("佃", "　佃")) ||
-      fullText.includes("コーシャタワー");
+    // 全角・半角スペースを除去してから照合（「コーシャタワー　佃」等の表記ゆれ対策）。
+    // 「コーシャタワー」だけの広すぎる一致はしない（佃以外のコーシャタワーに誤反応するため）
+    const normalize = (s) => s.replace(/[\s　]/g, "");
+    const found = normalize(fullText).includes(normalize(TARGET));
 
     const state = loadState();
 
