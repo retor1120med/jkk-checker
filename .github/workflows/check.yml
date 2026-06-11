@@ -3,7 +3,12 @@ name: JKK空室チェック
 on:
   schedule:
     - cron: "3,13,23,33,43,53 * * * *"
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      test_target:
+        description: "テスト用の対象住宅名（空欄なら通常のコーシャタワー佃を監視）"
+        required: false
+        default: ""
 
 concurrency:
   group: jkk-check
@@ -38,7 +43,7 @@ jobs:
       - name: 空室チェックを実行
         env:
           LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
-          TARGET_HOUSING: コーシャタワー佃
+          TARGET_HOUSING: ${{ github.event.inputs.test_target || 'コーシャタワー佃' }}
         run: node checker.js --once
 
       - name: 状態を保存
