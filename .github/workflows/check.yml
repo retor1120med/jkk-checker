@@ -1,0 +1,49 @@
+name: JKK空室チェック
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+
+concurrency:
+  group: jkk-check
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: コードを取得
+        uses: actions/checkout@v4
+
+      - name: Node.jsを準備
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: 状態を復元
+        uses: actions/cache/restore@v4
+        with:
+          path: state.json
+          key: jkk-state-${{ github.run_id }}
+          restore-keys: |
+            jkk-state-
+
+      - name: 依存関係をインストール
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+
+      - name: 空室チェックを実行
+        env:
+          LINE_CHANNEL_ACCESS_TOKEN: ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+          TARGET_HOUSING: コーシャタワー佃
+        run: node checker.js --once
+
+      - name: 状態を保存
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: state.json
+          key: jkk-state-${{ github.run_id }}
